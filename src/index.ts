@@ -3,10 +3,26 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
 const app = express();
+
+mongoose.connect(process.env.MONGODB_URL as string, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+});
+
+mongoose.connection
+  .once('open', () => {
+    console.log('MONGODB is connected');
+  })
+  .on('error', (err) => {
+    console.log(`MONGODB connection error: ${err}`);
+  });
 
 app.use(morgan('dev'));
 app.use(express.json());
