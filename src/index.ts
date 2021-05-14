@@ -1,9 +1,11 @@
+/* eslint-disable import/no-unresolved */
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
+import authRoutes from './routes/auth';
 
 dotenv.config();
 
@@ -32,9 +34,8 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
-  res.json({ greeting: 'Hello World' });
-});
+// routes
+app.use('/api/v1', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
