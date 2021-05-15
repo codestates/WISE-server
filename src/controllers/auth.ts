@@ -27,7 +27,43 @@ export const signup = async (req: Request, res: Response) => {
 
     const user = await UserModel.findOne({ email }).lean();
 
-    return res.status(201).json(user);
+    return res.status(201).json({
+      user: { ...user },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+  }
+};
+
+export const signin = async (req: Request, res: Response) => {
+  try {
+    const { authUser } = req.body;
+
+    const existingUser = await UserModel.findOne({ email: authUser.email }).lean();
+
+    if (existingUser) {
+      return res.status(200).json({
+        user: { ...existingUser },
+      });
+    }
+
+    const { name, email } = authUser;
+    const { role } = req.body;
+
+    const newUser: User = {
+      email,
+      name,
+      mobile: '',
+      role,
+    };
+
+    await UserModel.create(newUser);
+
+    const user = await UserModel.findOne({ email }).lean();
+
+    return res.status(200).json({
+      user: { ...user },
+    });
   } catch (error) {
     return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
   }
