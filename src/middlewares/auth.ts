@@ -8,7 +8,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     const authenticatedUser = await admin.auth().verifyIdToken(accessToken as string);
 
-    req.body.email = authenticatedUser.email;
+    req.body.authUser = authenticatedUser;
 
     return next();
   } catch (error) {
