@@ -24,7 +24,6 @@ const UserSchema = new Schema<User>({
   },
   mobile: {
     type: String,
-    required: true,
     trim: true,
   },
   role: {
