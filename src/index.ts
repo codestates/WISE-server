@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth';
+import userRoutes from './routes/user';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use(cookieParser());
 
 // routes
 app.use('/api/v1', authRoutes);
+app.use('/api/v1', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,12 +1,11 @@
 /* eslint-disable max-len */
 /* eslint-disable import/no-unresolved */
 import { Request, Response, NextFunction } from 'express';
-import { ObjectId } from 'mongoose';
 import UserModel from '../models/user';
 
-export const userById = async (req: Request, res: Response, next: NextFunction, userId:ObjectId) => {
+export const userById = async (req: Request, res: Response, next: NextFunction, userId: string) => {
   try {
-    const user = await UserModel.findById({ userId });
+    const user = await UserModel.findById(userId);
 
     if (!user) {
       return res.status(400).json({

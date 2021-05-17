@@ -53,7 +53,6 @@ export const signin = async (req: Request, res: Response) => {
     const newUser: User = {
       email,
       name,
-      mobile: '',
       role,
     };
 
