@@ -3,10 +3,9 @@ import { Schema, model } from 'mongoose';
 export interface User {
   email: string,
   name: string,
-  mobile: string,
+  mobile?: string,
   role: string,
-  location?: string,
-  profileImage?: string
+  image?: string
 }
 
 const UserSchema = new Schema<User>({
@@ -25,6 +24,7 @@ const UserSchema = new Schema<User>({
   mobile: {
     type: String,
     trim: true,
+    default: '',
   },
   role: {
     type: String,
@@ -35,12 +35,9 @@ const UserSchema = new Schema<User>({
       'assistant',
     ],
   },
-  location: {
+  image: {
     type: String,
-    trim: true,
-  },
-  profileImage: {
-    type: String,
+    default: '',
   },
 });
 
