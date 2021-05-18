@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 import serviceRoutes from './routes/service';
+import reviewRoutes from './routes/review';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use(cookieParser());
 app.use('/api/v1', authRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', serviceRoutes);
+app.use('/api/v1', reviewRoutes);
 
 const PORT = process.env.PORT || 5000;
 

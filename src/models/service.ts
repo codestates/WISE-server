@@ -83,6 +83,6 @@ const ServiceSchema = new Schema<Service>({
       required: true,
     },
   ],
-});
+}, { timestamps: true });
 
 export default model<Service>('service', ServiceSchema);
