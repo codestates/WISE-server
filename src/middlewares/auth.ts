@@ -1,14 +1,14 @@
 /* eslint-disable import/no-unresolved */
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import admin from '../firebase';
 
-const auth = async (req: Request, res: Response, next: NextFunction) => {
+const auth = async (req: any, res: Response, next: NextFunction) => {
   try {
     const accessToken = req.header('accessToken');
-
+    console.log(accessToken);
     const authenticatedUser = await admin.auth().verifyIdToken(accessToken as string);
 
-    req.body.authUser = authenticatedUser;
+    req.authUser = authenticatedUser;
 
     return next();
   } catch (error) {
