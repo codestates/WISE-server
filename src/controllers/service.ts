@@ -23,13 +23,25 @@ export const createService = async (req: any, res: Response) => {
   try {
     const { email } = req.authUser;
     const {
-      content, wage, availableDays, availableTimes, greeting, isDriver, location, isTrained, trainingCert, isAuthorized, orgAuth,
+      content, wage, availableDays, availableTimes, greeting, isDriver, location, isTrained, isAuthorized,
     } = req.body;
 
-    const images: any = [...req.files as any];
+    const images: any = [...req.files.images as any];
     const imagesArray: string[] = [];
     images.forEach((element: any) => {
       imagesArray.push(element.key);
+    });
+
+    const trainingCert: any = [...req.files.trainingCert as any];
+    const trainingCertArray: string[] = [];
+    trainingCert.forEach((element: any) => {
+      trainingCertArray.push(element.key);
+    });
+
+    const orgAuth: any = [...req.files.orgAuth as any];
+    const orgAuthArray: string[] = [];
+    orgAuth.forEach((element: any) => {
+      orgAuthArray.push(element.key);
     });
 
     const existingUser = await UserModel.findOne({ email });
@@ -45,9 +57,9 @@ export const createService = async (req: any, res: Response) => {
       location,
       images: imagesArray,
       isTrained,
-      trainingCert,
+      trainingCert: trainingCertArray,
       isAuthorized,
-      orgAuth,
+      orgAuth: orgAuthArray,
     };
 
     await ServiceModel.create(newService);
@@ -63,15 +75,27 @@ export const createService = async (req: any, res: Response) => {
 
 export const updateService = async (req: any, res: Response) => {
   try {
-    const images: any = [...req.files as any];
-    const imagesArray : string[] = [];
+    const images: any = [...req.files.images as any];
+    const imagesArray: string[] = [];
     images.forEach((element: any) => {
       imagesArray.push(element.key);
     });
 
+    const trainingCert: any = [...req.files.trainingCert as any];
+    const trainingCertArray: string[] = [];
+    trainingCert.forEach((element: any) => {
+      trainingCertArray.push(element.key);
+    });
+
+    const orgAuth: any = [...req.files.orgAuth as any];
+    const orgAuthArray: string[] = [];
+    orgAuth.forEach((element: any) => {
+      orgAuthArray.push(element.key);
+    });
+
     let serviceDetails = {};
     const {
-      content, wage, availableDays, availableTimes, greeting, isDriver, location, isTrained, trainingCert, isAuthorized, orgAuth,
+      content, wage, availableDays, availableTimes, greeting, isDriver, location, isTrained, isAuthorized,
     } = req.body;
 
     if (content) {
@@ -102,13 +126,13 @@ export const updateService = async (req: any, res: Response) => {
       serviceDetails = { ...serviceDetails, isTrained };
     }
     if (trainingCert) {
-      serviceDetails = { ...serviceDetails, trainingCert };
+      serviceDetails = { ...serviceDetails, trainingCert: trainingCertArray };
     }
     if (isAuthorized) {
       serviceDetails = { ...serviceDetails, isAuthorized };
     }
     if (orgAuth) {
-      serviceDetails = { ...serviceDetails, orgAuth };
+      serviceDetails = { ...serviceDetails, orgAuth: orgAuthArray };
     }
     if (images) {
       serviceDetails = { ...serviceDetails, images: imagesArray };
@@ -116,9 +140,17 @@ export const updateService = async (req: any, res: Response) => {
 
     const { service } = req;
     const existingService = await ServiceModel.findByIdAndUpdate(service._id, serviceDetails).lean();
+
     existingService?.images.forEach((element: any) => {
       deleteImage(element.split('/')[1]);
     });
+    existingService?.trainingCert.forEach((element: any) => {
+      deleteImage(element.split('/')[1]);
+    });
+    existingService?.orgAuth.forEach((element: any) => {
+      deleteImage(element.split('/')[1]);
+    });
+
     const updatedService = await ServiceModel.findById(service._id).lean();
 
     return res.status(200).json({
@@ -135,6 +167,12 @@ export const deleteService = async (req: any, res: Response) => {
     const existingService = await ServiceModel.findById(service._id).lean();
 
     existingService?.images.forEach((element: any) => {
+      deleteImage(element.split('/')[1]);
+    });
+    existingService?.trainingCert.forEach((element: any) => {
+      deleteImage(element.split('/')[1]);
+    });
+    existingService?.orgAuth.forEach((element: any) => {
       deleteImage(element.split('/')[1]);
     });
 
