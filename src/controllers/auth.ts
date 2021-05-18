@@ -35,9 +35,9 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-export const signin = async (req: Request, res: Response) => {
+export const signin = async (req: any, res: Response) => {
   try {
-    const { authUser } = req.body;
+    const { authUser } = req;
 
     const existingUser = await UserModel.findOne({ email: authUser.email }).lean();
 

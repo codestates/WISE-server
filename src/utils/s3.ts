@@ -30,7 +30,7 @@ export const upload = multer({
     acl: 'public-read',
     key: (req, file, cb) => {
       const extension = path.extname(file.originalname);
-      cb(null, `wise/${Date.now().toString()}${extension}`);
+      cb(null, `wise/${Date.now().toString()}${parseInt(String(Math.random() * 1000), 10)}${extension}`);
     },
   }),
   limits: { fileSize: 3 * 1024 * 1024 }, // 용량 제한
