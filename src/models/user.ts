@@ -39,6 +39,6 @@ const UserSchema = new Schema<User>({
     type: String,
     default: '',
   },
-});
+}, { timestamps: true });
 
 export default model<User>('user', UserSchema);
