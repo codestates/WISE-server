@@ -1,7 +1,7 @@
 import { Schema, model, ObjectId } from 'mongoose';
 
 export interface Service {
-  servedBy: ObjectId,
+  assistant: ObjectId,
   content: string,
   wage: number,
   availableDays: string[],
@@ -9,10 +9,15 @@ export interface Service {
   greeting: string,
   isDriver: boolean,
   location: string,
+  images: string[],
+  isTrained: boolean,
+  trainingCert: string[],
+  isAuthorized: boolean,
+  orgAuth: string[],
 }
 
 const ServiceSchema = new Schema<Service>({
-  servedBy: {
+  assistant: {
     type: Schema.Types.ObjectId,
     ref: 'user',
     required: true,
@@ -52,6 +57,32 @@ const ServiceSchema = new Schema<Service>({
     type: String,
     required: true,
   },
+  images: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  isTrained: {
+    type: Boolean,
+    required: true,
+  },
+  trainingCert: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  isAuthorized: {
+    type: Boolean,
+    required: true,
+  },
+  orgAuth: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
 });
 
 export default model<Service>('service', ServiceSchema);
