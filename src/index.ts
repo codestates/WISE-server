@@ -9,6 +9,7 @@ import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 import serviceRoutes from './routes/service';
 import reviewRoutes from './routes/review';
+import reservationRoutes from './routes/reservatoin';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use('/api/v1', authRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', serviceRoutes);
 app.use('/api/v1', reviewRoutes);
+app.use('/api/v1', reservationRoutes);
 
 const PORT = process.env.PORT || 5000;
 
