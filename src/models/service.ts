@@ -2,11 +2,11 @@ import { Schema, model, ObjectId } from 'mongoose';
 
 export interface Service {
   assistant: ObjectId,
-  content: string,
+  description: string,
   wage: number,
   availableDays: string[],
   availableTimes: string[],
-  greeting: string,
+  greetings: string,
   isDriver: boolean,
   location: string,
   images: string[],
@@ -23,7 +23,7 @@ const ServiceSchema = new Schema<Service>({
     required: true,
     unique: true,
   },
-  content: {
+  description: {
     type: String,
     trim: true,
     required: true,
@@ -44,7 +44,7 @@ const ServiceSchema = new Schema<Service>({
       required: true,
     },
   ],
-  greeting: {
+  greetings: {
     type: String,
     trim: true,
     required: true,
