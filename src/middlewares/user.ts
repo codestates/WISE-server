@@ -20,9 +20,9 @@ export const userById = async (req: Request, res: Response, next: NextFunction, 
   }
 };
 
-export const isSameUser = async (req: Request, res: Response, next: NextFunction) => {
+export const isSameUser = async (req: any, res: Response, next: NextFunction) => {
   try {
-    const isSame = req.body.user.email === req.body.authUser.email;
+    const isSame = req.body.user.email === req.authUser.email;
 
     if (!isSame) {
       return res.status(403).json({ message: '유저 권한이 없습니다' });

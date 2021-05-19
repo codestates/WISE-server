@@ -65,6 +65,8 @@ export const createService = async (req: any, res: Response) => {
     await ServiceModel.create(newService);
     const existingService = await ServiceModel.findOne({ assistant: existingUser?._id }).lean();
 
+    await UserModel.findByIdAndUpdate(existingUser?._id, { isAssistant: true }).exec();
+
     return res.status(200).json({
       service: { ...existingService },
     });
@@ -177,6 +179,7 @@ export const deleteService = async (req: any, res: Response) => {
     });
 
     ServiceModel.findByIdAndDelete(service._id).exec();
+    await UserModel.findByIdAndUpdate(existingService?.assistant, { isAssistant: false }).exec();
 
     return res.status(200).json({ message: '서비스 정보를 삭제했습니다' });
   } catch (error) {
