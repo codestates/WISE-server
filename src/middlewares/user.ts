@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable import/no-unresolved */
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import UserModel from '../models/user';
 
-export const userById = async (req: Request, res: Response, next: NextFunction, userId: string) => {
+export const userById = async (req: any, res: Response, next: NextFunction, userId: string) => {
   try {
     const user = await UserModel.findById(userId);
 
@@ -13,23 +13,30 @@ export const userById = async (req: Request, res: Response, next: NextFunction, 
       });
     }
 
-    req.body.user = user;
+    req.user = user;
+
     return next();
   } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+    return res.status(500).json({
+      message: '서버 에러로 요청을 처리할 수 없습니다',
+    });
   }
 };
 
 export const isSameUser = async (req: any, res: Response, next: NextFunction) => {
   try {
-    const isSame = req.body.user.email === req.authUser.email;
+    const isSame = req.user.email === req.authUser.email;
 
     if (!isSame) {
-      return res.status(403).json({ message: '유저 권한이 없습니다' });
+      return res.status(403).json({
+        message: '유저 권한이 없습니다',
+      });
     }
 
     return next();
   } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+    return res.status(500).json({
+      message: '서버 에러로 요청을 처리할 수 없습니다',
+    });
   }
 };
