@@ -3,9 +3,10 @@ import { Schema, model } from 'mongoose';
 export interface User {
   email: string,
   name: string,
+  signinMethod: string,
   mobile?: string,
-  role: string,
-  image?: string
+  image?: string,
+  isAssistant?: boolean,
 }
 
 const UserSchema = new Schema<User>({
@@ -21,23 +22,28 @@ const UserSchema = new Schema<User>({
     required: true,
     trim: true,
   },
+  signinMethod: {
+    type: String,
+    required: true,
+    enum: [
+      'password',
+      'google',
+      'facebook',
+    ],
+  },
   mobile: {
     type: String,
     trim: true,
     default: '',
   },
-  role: {
-    type: String,
-    required: true,
-    trim: true,
-    enum: [
-      'customer',
-      'assistant',
-    ],
-  },
   image: {
     type: String,
     default: '',
+  },
+  isAssistant: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
 }, { timestamps: true });
 
