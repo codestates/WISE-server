@@ -23,7 +23,7 @@ export const createService = async (req: any, res: Response) => {
   try {
     const { email } = req.authUser;
     const {
-      content, wage, availableDays, availableTimes, greeting, isDriver, location, isTrained, isAuthorized,
+      description, wage, availableDays, availableTimes, greetings, isDriver, location, isTrained, isAuthorized,
     } = req.body;
 
     const images: any = [...req.files.images as any];
@@ -48,11 +48,11 @@ export const createService = async (req: any, res: Response) => {
 
     const newService: Service = {
       assistant: existingUser?._id,
-      content,
+      description,
       wage,
       availableDays,
       availableTimes,
-      greeting,
+      greetings,
       isDriver,
       location,
       images: imagesArray,
@@ -95,11 +95,11 @@ export const updateService = async (req: any, res: Response) => {
 
     let serviceDetails = {};
     const {
-      content, wage, availableDays, availableTimes, greeting, isDriver, location, isTrained, isAuthorized,
+      description, wage, availableDays, availableTimes, greetings, isDriver, location, isTrained, isAuthorized,
     } = req.body;
 
-    if (content) {
-      serviceDetails = { ...serviceDetails, content };
+    if (description) {
+      serviceDetails = { ...serviceDetails, description };
     }
     if (wage) {
       serviceDetails = { ...serviceDetails, wage };
@@ -110,8 +110,8 @@ export const updateService = async (req: any, res: Response) => {
     if (availableTimes) {
       serviceDetails = { ...serviceDetails, availableTimes };
     }
-    if (greeting) {
-      serviceDetails = { ...serviceDetails, greeting };
+    if (greetings) {
+      serviceDetails = { ...serviceDetails, greetings };
     }
     if (isDriver) {
       serviceDetails = { ...serviceDetails, isDriver };
