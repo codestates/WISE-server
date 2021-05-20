@@ -5,7 +5,6 @@ export interface Service {
   description: string,
   wage: number,
   availableDays: string[],
-  availableTimes: string[],
   greetings: string,
   isDriver: boolean,
   location: string,
@@ -14,6 +13,7 @@ export interface Service {
   trainingCert: string[],
   isAuthorized: boolean,
   orgAuth: string[],
+  starRating: number
 }
 
 const ServiceSchema = new Schema<Service>({
@@ -33,12 +33,6 @@ const ServiceSchema = new Schema<Service>({
     required: true,
   },
   availableDays: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
-  availableTimes: [
     {
       type: String,
       required: true,
@@ -83,6 +77,13 @@ const ServiceSchema = new Schema<Service>({
       required: true,
     },
   ],
+  starRating: {
+    type: Number,
+    required: true,
+    default: 0,
+    min: 0,
+    max: 5,
+  },
 }, { timestamps: true });
 
 export default model<Service>('service', ServiceSchema);
