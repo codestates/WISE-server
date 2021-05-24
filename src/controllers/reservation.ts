@@ -36,7 +36,7 @@ export const createReservation = async (req: any, res: Response) => {
     const { email } = req.authUser;
     const customer = await UserModel.findOne({ email });
     const {
-      state, serviceId, home, hospital, content, date, time, hours, totalPayment,
+      state, serviceId, pickup, hospital, content, date, time, hours, totalPayment, message,
     } = req.body;
     const assistant = await ServiceModel.findById(serviceId);
 
@@ -44,7 +44,8 @@ export const createReservation = async (req: any, res: Response) => {
       customer: customer?._id,
       assistant: assistant?.assistant,
       service: serviceId,
-      home,
+      pickup,
+      message,
       hospital,
       content,
       date,

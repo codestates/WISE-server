@@ -4,9 +4,10 @@ export interface Reservation {
   customer: ObjectId,
   assistant?: ObjectId,
   service: ObjectId,
-  home: string,
+  pickup: string,
   hospital: string,
   content: string,
+  message: string,
   date: Date,
   time: string,
   hours: number,
@@ -39,6 +40,10 @@ const ReservationSchema = new Schema<Reservation>({
     required: true,
   },
   content: {
+    type: String,
+    required: true,
+  },
+  message: {
     type: String,
     required: true,
   },
