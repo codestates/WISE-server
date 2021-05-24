@@ -13,7 +13,8 @@ export interface Service {
   trainingCert: string[],
   isAuthorized: boolean,
   orgAuth: string[],
-  starRating: number
+  starRating: number,
+  bankAccount: string
 }
 
 const ServiceSchema = new Schema<Service>({
@@ -83,6 +84,10 @@ const ServiceSchema = new Schema<Service>({
     default: 0,
     min: 0,
     max: 5,
+  },
+  bankAccount: {
+    type: String,
+    required: true,
   },
 }, { timestamps: true });
 

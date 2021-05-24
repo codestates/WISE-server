@@ -26,7 +26,7 @@ export const createService = async (req: any, res: Response) => {
   try {
     const { email } = req.authUser;
     const {
-      description, wage, availableDays, greetings, isDriver, location, isTrained, isAuthorized,
+      description, wage, availableDays, greetings, isDriver, location, isTrained, isAuthorized, bankAccount,
     } = req.body;
 
     const images: any = [...req.files.images as any];
@@ -63,6 +63,7 @@ export const createService = async (req: any, res: Response) => {
       isAuthorized,
       orgAuth: orgAuthArray,
       starRating: 0,
+      bankAccount,
     };
 
     await ServiceModel.create(newService);
@@ -100,7 +101,7 @@ export const updateService = async (req: any, res: Response) => {
 
     let serviceDetails = {};
     const {
-      description, wage, availableDays, greetings, isDriver, location, isTrained, isAuthorized,
+      description, wage, availableDays, greetings, isDriver, location, isTrained, isAuthorized, bankAccount,
     } = req.body;
 
     if (description) {
@@ -138,6 +139,9 @@ export const updateService = async (req: any, res: Response) => {
     }
     if (images) {
       serviceDetails = { ...serviceDetails, images: imagesArray };
+    }
+    if (bankAccount) {
+      serviceDetails = { ...serviceDetails, bankAccount };
     }
 
     const { service } = req;
