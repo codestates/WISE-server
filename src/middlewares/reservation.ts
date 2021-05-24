@@ -4,9 +4,9 @@ import { Response, NextFunction } from 'express';
 import ReservationModel from '../models/reservation';
 import UserModel from '../models/user';
 
-export const reservationById = async (req: any, res: Response, next: NextFunction, serviceId: string) => {
+export const reservationById = async (req: any, res: Response, next: NextFunction, reservationId: string) => {
   try {
-    const reservation = await ReservationModel.findById(serviceId);
+    const reservation = await ReservationModel.findById(reservationId);
 
     if (!reservation) {
       return res.status(400).json({
