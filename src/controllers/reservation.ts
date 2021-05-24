@@ -1,10 +1,15 @@
+/* eslint-disable no-throw-literal */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable max-len */
 /* eslint-disable import/no-unresolved */
 import { Response } from 'express';
+
+import dotenv from 'dotenv';
 import UserModel from '../models/user';
 import ServiceModel from '../models/service';
 import ReservationModel, { Reservation } from '../models/reservation';
+
+dotenv.config();
 
 export const getReservation = async (req: any, res: Response) => {
   try {
