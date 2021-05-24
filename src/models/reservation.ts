@@ -31,7 +31,7 @@ const ReservationSchema = new Schema<Reservation>({
     ref: 'service',
     required: true,
   },
-  home: {
+  pickup: {
     type: String,
     required: true,
   },
