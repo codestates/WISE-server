@@ -12,6 +12,19 @@ import OrderModel, { Order } from '../models/order';
 
 dotenv.config();
 
+export const getOrder = async (req: any, res: Response) => {
+  try {
+    const { order } = req;
+    const existingOrder = await OrderModel.findById(order._id).lean();
+
+    return res.status(200).json({
+      order: { ...existingOrder },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+  }
+};
+
 export const getOrders = async (req: any, res: Response) => {
   try {
     const { user } = req;
