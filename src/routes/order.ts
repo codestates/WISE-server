@@ -5,11 +5,12 @@ import { orderById, isOrderUser } from '../middlewares/order';
 import { isSameUser, userById } from '../middlewares/user';
 
 import {
-  getOrders, createOrder, updateOrder, deleteOrder,
+  getOrder, getOrders, createOrder, updateOrder, deleteOrder,
 } from '../controllers/order';
 
 const router = Router();
 
+router.get('/orders/:orderId', auth, isOrderUser, getOrder);
 router.get('/orders/:userId', auth, isSameUser, getOrders);
 router.post('/orders', auth, createOrder);
 router.patch('/orders/:orderId', auth, isOrderUser, updateOrder);
