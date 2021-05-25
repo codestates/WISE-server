@@ -5,7 +5,7 @@ import { validateEmail, signup, signin } from '../controllers/auth';
 
 const router = Router();
 
-router.post('/email-validation', validateEmail);
+router.post('/validation/email', validateEmail);
 router.post('/signup', auth, signup);
 router.post('/signin', auth, signin);
 
