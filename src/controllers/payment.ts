@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Response } from 'express';
 import axios from 'axios';
-import ReservationModel from '../models/reservation';
+import OrderModel from '../models/order';
 
 export const completePayment = async (req: any, res: Response) => {
   try {
@@ -30,16 +30,16 @@ export const completePayment = async (req: any, res: Response) => {
     const paymentData = getPaymentData.data.response; // 조회한 결제 정보
 
     // DB에서 결제되어야 하는 금액 조회
-    const { reservation } = req;
+    const { order } = req;
     // 결제 검증하기
 
     console.log(paymentData);
     const { amount, status } = paymentData;
     console.log(amount, status);
-    console.log(reservation.totalPayment);
+    console.log(order.totalPayment);
 
-    if (amount === reservation.totalPayment) { // 결제 금액 일치. 결제 된 금액 === 결제 되어야 하는 금액
-      await ReservationModel.findByIdAndUpdate(reservation._id, { state: 'complete' }).exec(); // DB에 결제 정보 저장
+    if (amount === order.totalPayment) { // 결제 금액 일치. 결제 된 금액 === 결제 되어야 하는 금액
+      await OrderModel.findByIdAndUpdate(order._id, { state: 'complete' }).exec(); // DB에 결제 정보 저장
       if (status === 'paid') {
         return res.status(200).json({ status: 'success', message: '일반 결제 성공' });
       }

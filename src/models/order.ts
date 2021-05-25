@@ -1,8 +1,8 @@
 import { Schema, model, ObjectId } from 'mongoose';
 
-export interface Reservation {
+export interface Order {
   customer: ObjectId,
-  assistant?: ObjectId,
+  assistant: ObjectId,
   service: ObjectId,
   pickup: string,
   hospital: string,
@@ -12,10 +12,11 @@ export interface Reservation {
   time: string,
   hours: number,
   totalPayment: number,
-  state: string
+  state: string,
+  isReviewed: boolean,
 }
 
-const ReservationSchema = new Schema<Reservation>({
+const OrderSchema = new Schema<Order>({
   customer: {
     type: Schema.Types.ObjectId,
     ref: 'user',
@@ -72,6 +73,11 @@ const ReservationSchema = new Schema<Reservation>({
       'complete',
     ],
   },
+  isReviewed: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 }, { timestamps: true });
 
-export default model<Reservation>('reservation', ReservationSchema);
+export default model<Order>('order', OrderSchema);

@@ -21,10 +21,11 @@ export const serviceById = async (req: any, res: Response, next: NextFunction, s
   }
 };
 
-export const isSameAssistant = async (req: any, res: Response, next: NextFunction) => {
+export const isServiceUser = async (req: any, res: Response, next: NextFunction) => {
   try {
     const user = await UserModel.findById(req.service.assistant);
     const isSame = user?.email === req.authUser.email;
+
     if (!isSame) {
       return res.status(403).json({ message: '어시스턴트 권한이 없습니다' });
     }
