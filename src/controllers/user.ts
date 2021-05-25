@@ -53,10 +53,15 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteUser = (req: any, res: Response) => {
+export const deleteUser = async (req: any, res: Response) => {
   try {
     const { user } = req;
-    UserModel.findByIdAndDelete(user.id).exec();
+    const existingUser = await UserModel.findByIdAndDelete(user.id).exec();
+
+    if (existingUser?.image) {
+      const prevImage = existingUser.image.split('/')[1] || '';
+      deleteImage(prevImage);
+    }
 
     return res.status(200).json({
       message: '유저 정보를 삭제했습니다',
