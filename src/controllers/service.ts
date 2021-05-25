@@ -44,7 +44,7 @@ export const getServices = async (req: any, res: Response) => {
     });
     const day = `${moment(date).format('dddd')} ${time}`;
 
-    const service = await ServiceModel.find({
+    const services = await ServiceModel.find({
       assistant: { $nin: bookedOrders }, location, availableDays: day,
     })
       .sort({ _id: 1, starRating: -1 })
@@ -59,7 +59,7 @@ export const getServices = async (req: any, res: Response) => {
     }).countDocuments();
 
     return res.status(200).json({
-      service: [...service],
+      services: [...services],
       totalServices,
     });
   } catch (error) {
