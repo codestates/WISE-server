@@ -6,8 +6,8 @@ import moment from 'moment';
 import { ObjectId } from 'mongoose';
 import UserModel from '../models/user';
 import ServiceModel from '../models/service';
+import OrderModel from '../models/order';
 import { deleteImage } from '../utils/s3';
-import ReservationModel from '../models/reservation';
 
 export const getService = async (req: any, res: Response) => {
   try {
@@ -16,6 +16,92 @@ export const getService = async (req: any, res: Response) => {
 
     return res.status(200).json({
       service: { ...existingService },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+  }
+};
+
+export const getServices = async (req: any, res: Response) => {
+  try {
+    const {
+      location, date, time, page,
+    } = req.query;
+    const searchPerPage = 16;
+
+    const orders = await OrderModel.find({
+      date: {
+        $gte: moment(date).startOf('day').toDate(),
+        $lte: moment(date).endOf('day').toDate(),
+      },
+      time,
+      state: { $in: ['accept', 'complete'] },
+    }).select('assistant');
+
+    const bookedOrders: ObjectId[] = [];
+    orders.forEach((element: any) => {
+      bookedOrders.push(element.assistant);
+    });
+    const day = `${moment(date).format('dddd')} ${time}`;
+
+    const service = await ServiceModel.find({
+      assistant: { $nin: bookedOrders }, location, availableDays: day,
+    })
+      .sort({ _id: 1, starRating: -1 })
+      .skip((Number(page) - 1) * searchPerPage)
+      .limit(searchPerPage)
+      .select('assistant images wage greetings location starRating')
+      .populate('assistant', 'name')
+      .lean();
+
+    const totalServices = await ServiceModel.find({
+      assistant: { $nin: bookedOrders }, location, availableDays: day,
+    }).countDocuments();
+
+    return res.status(200).json({
+      service: [...service],
+      totalServices,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+  }
+};
+
+export const getPopularServices = async (req: any, res: Response) => {
+  try {
+    const popularServices = await ServiceModel.find({})
+      .sort({ _id: 1, starRating: -1 })
+      .limit(8)
+      .select('assistant images wage greetings location starRating')
+      .populate('assistant', 'name')
+      .lean();
+
+    return res.status(200).json({
+      popularServices: [...popularServices],
+    });
+  } catch (error) {
+    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+  }
+};
+
+export const getAllServices = async (req: any, res: Response) => {
+  try {
+    const { page } = req.query;
+    const searchPerPage = 16;
+
+    const services = await ServiceModel.find({})
+      .sort({ _id: 1, starRating: -1 })
+      .skip(8 + (Number(page) - 1) * searchPerPage)
+      .limit(searchPerPage)
+      .select('assistant images wage greetings location starRating')
+      .populate('assistant', 'name')
+      .lean();
+
+    const totalServices = await ServiceModel.find({}).countDocuments();
+
+    return res.status(200).json({
+      services: [...services],
+      totalServices,
     });
   } catch (error) {
     return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
@@ -48,7 +134,6 @@ export const createService = async (req: any, res: Response) => {
       images: imagesArray,
       isTrained,
       isAuthorized,
-      starRating: 0,
       bankAccount,
     };
 
@@ -70,6 +155,7 @@ export const createService = async (req: any, res: Response) => {
     }
 
     await ServiceModel.create(newService);
+
     const existingService = await ServiceModel.findOne({ assistant: existingUser?._id }).lean();
 
     await UserModel.findByIdAndUpdate(existingUser?._id, { isAssistant: true }).exec();
@@ -189,92 +275,6 @@ export const deleteService = async (req: any, res: Response) => {
     await UserModel.findByIdAndUpdate(existingService?.assistant, { isAssistant: false }).exec();
 
     return res.status(200).json({ message: '서비스 정보를 삭제했습니다' });
-  } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
-  }
-};
-
-export const getAllServices = async (req: any, res: Response) => {
-  try {
-    const { page } = req.query;
-    const searchPerPage = 16;
-
-    const service = await ServiceModel.find({})
-      .sort({ _id: 1, starRating: -1 })
-      .skip(8 + (Number(page) - 1) * searchPerPage)
-      .limit(searchPerPage)
-      .select('assistant images wage greetings location starRating')
-      .populate('assistant', 'name')
-      .lean();
-
-    const totalServices = await ServiceModel.find({}).countDocuments();
-
-    return res.status(200).json({
-      service: [...service],
-      totalServices,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
-  }
-};
-
-export const getPopularity = async (req: any, res: Response) => {
-  try {
-    const popularService = await ServiceModel.find({})
-      .sort({ _id: 1, starRating: -1 })
-      .limit(8)
-      .select('assistant images wage greetings location starRating')
-      .populate('assistant', 'name')
-      .lean();
-
-    return res.status(200).json({
-      popularService: [...popularService],
-    });
-  } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
-  }
-};
-
-export const getServices = async (req: any, res: Response) => {
-  try {
-    const {
-      location, date, time,
-    } = req.query;
-    const reservation = await ReservationModel.find({
-      date: {
-        $gte: moment(date).startOf('day').toDate(),
-        $lte: moment(date).endOf('day').toDate(),
-      },
-      time,
-      state: { $in: ['accept', 'complete'] },
-    }).select('assistant');
-
-    const newReservation:ObjectId[] = [];
-    reservation.forEach((element: any) => {
-      newReservation.push(element.assistant);
-    });
-    const day = `${moment(date).format('dddd')} ${time}`;
-    const { page } = req.query;
-    const searchPerPage = 16;
-
-    const service = await ServiceModel.find({
-      assistant: { $nin: newReservation }, location, availableDays: day,
-    })
-      .sort({ _id: 1, starRating: -1 })
-      .skip((Number(page) - 1) * searchPerPage)
-      .limit(searchPerPage)
-      .select('assistant images wage greetings location starRating')
-      .populate('assistant', 'name')
-      .lean();
-
-    const totalServices = await ServiceModel.find({
-      assistant: { $nin: newReservation }, location, availableDays: day,
-    }).countDocuments();
-
-    return res.status(200).json({
-      service: [...service],
-      totalServices,
-    });
   } catch (error) {
     return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
   }
