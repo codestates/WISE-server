@@ -4,6 +4,7 @@ export interface Review {
   content: string,
   customer: ObjectId,
   service: ObjectId,
+  starRating: number,
 }
 
 const ReviewSchema = new Schema<Review>({
@@ -21,6 +22,12 @@ const ReviewSchema = new Schema<Review>({
     type: Schema.Types.ObjectId,
     ref: 'service',
     required: true,
+  },
+  starRating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5,
   },
 }, { timestamps: true });
 
