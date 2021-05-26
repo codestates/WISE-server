@@ -7,6 +7,7 @@ import { ObjectId } from 'mongoose';
 import UserModel from '../models/user';
 import ServiceModel from '../models/service';
 import OrderModel from '../models/order';
+import ReviewModel from '../models/review';
 import { deleteImage } from '../utils/s3';
 
 export const getService = async (req: any, res: Response) => {
@@ -170,25 +171,8 @@ export const createService = async (req: any, res: Response) => {
 
 export const updateService = async (req: any, res: Response) => {
   try {
-    const images: any = [...req.files.images as any];
-    const imagesArray: string[] = [];
-    images.forEach((element: any) => {
-      imagesArray.push(element.key);
-    });
-
-    const trainingCert: any = [...req.files.trainingCert as any];
-    const trainingCertArray: string[] = [];
-    trainingCert.forEach((element: any) => {
-      trainingCertArray.push(element.key);
-    });
-
-    const orgAuth: any = [...req.files.orgAuth as any];
-    const orgAuthArray: string[] = [];
-    orgAuth.forEach((element: any) => {
-      orgAuthArray.push(element.key);
-    });
-
     let serviceDetails = {};
+
     const {
       description, wage, availableDays, greetings, isDriver, location, isTrained, isAuthorized, bankAccount,
     } = req.body;
@@ -217,23 +201,44 @@ export const updateService = async (req: any, res: Response) => {
     if (isTrained) {
       serviceDetails = { ...serviceDetails, isTrained };
     }
-    if (trainingCert) {
-      serviceDetails = { ...serviceDetails, trainingCert: trainingCertArray };
-    }
     if (isAuthorized) {
       serviceDetails = { ...serviceDetails, isAuthorized };
-    }
-    if (orgAuth) {
-      serviceDetails = { ...serviceDetails, orgAuth: orgAuthArray };
-    }
-    if (images) {
-      serviceDetails = { ...serviceDetails, images: imagesArray };
     }
     if (bankAccount) {
       serviceDetails = { ...serviceDetails, bankAccount };
     }
 
+    if (req.files) {
+      if (req.files.images) {
+        const images: any = [...req.files.images as any];
+        const imagesArray: string[] = [];
+        images.forEach((element: any) => {
+          imagesArray.push(element.key);
+        });
+        serviceDetails = { ...serviceDetails, images: imagesArray };
+      }
+
+      if (req.files.trainingCert) {
+        const trainingCert: any = [...req.files.trainingCert as any];
+        const trainingCertArray: string[] = [];
+        trainingCert.forEach((element: any) => {
+          trainingCertArray.push(element.key);
+        });
+        serviceDetails = { ...serviceDetails, trainingCert: trainingCertArray };
+      }
+
+      if (req.files.orgAuth) {
+        const orgAuth: any = [...req.files.orgAuth as any];
+        const orgAuthArray: string[] = [];
+        orgAuth.forEach((element: any) => {
+          orgAuthArray.push(element.key);
+        });
+        serviceDetails = { ...serviceDetails, orgAuth: orgAuthArray };
+      }
+    }
+
     const { service } = req;
+
     const existingService = await ServiceModel.findByIdAndUpdate(service._id, serviceDetails).lean();
 
     existingService?.images.forEach((element: any) => {
@@ -270,6 +275,9 @@ export const deleteService = async (req: any, res: Response) => {
     existingService?.orgAuth.forEach((element: any) => {
       deleteImage(element.split('/')[1]);
     });
+
+    ReviewModel.remove({ service: service._id }).exec();
+    await OrderModel.updateMany({ service: service._id }, { assistant: null, service: null });
 
     ServiceModel.findByIdAndDelete(service._id).exec();
     await UserModel.findByIdAndUpdate(existingService?.assistant, { isAssistant: false }).exec();

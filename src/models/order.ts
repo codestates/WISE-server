@@ -1,9 +1,10 @@
+/* eslint-disable no-bitwise */
 import { Schema, model, ObjectId } from 'mongoose';
 
 export interface Order {
   customer: ObjectId,
-  assistant: ObjectId,
-  service: ObjectId,
+  assistant: ObjectId|null,
+  service: ObjectId|null,
   pickup: string,
   hospital: string,
   content: string,
