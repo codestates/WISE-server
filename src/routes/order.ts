@@ -2,16 +2,16 @@
 import { Router } from 'express';
 import auth from '../middlewares/auth';
 import { orderById, isOrderUser } from '../middlewares/order';
-import { isSameUser, userById } from '../middlewares/user';
+import { userById } from '../middlewares/user';
 
 import {
-  getOrder, getOrders, createOrder, updateOrder, deleteOrder,
+  getOrder, getOrdersByUser, createOrder, updateOrder, deleteOrder,
 } from '../controllers/order';
 
 const router = Router();
 
 router.get('/orders/:orderId', auth, isOrderUser, getOrder);
-router.get('/orders/:userId', auth, isSameUser, getOrders);
+router.get('/orders', auth, getOrdersByUser);
 router.post('/orders', auth, createOrder);
 router.patch('/orders/:orderId', auth, isOrderUser, updateOrder);
 router.delete('/orders/:orderId', auth, isOrderUser, deleteOrder);
