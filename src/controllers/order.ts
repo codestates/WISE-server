@@ -25,18 +25,19 @@ export const getOrder = async (req: any, res: Response) => {
   }
 };
 
-export const getOrders = async (req: any, res: Response) => {
+export const getOrdersByUser = async (req: any, res: Response) => {
   try {
-    const { user } = req;
-    const existingUser = await UserModel.findById(user.id);
+    const { email } = req.authUser;
+    const { userId, type } = req.query;
+    const existingUser = await UserModel.findById(userId);
 
-    let orders;
-
-    if (existingUser?.isAssistant) {
-      orders = await OrderModel.findOne({ assistant: existingUser._id }).lean();
-    } else {
-      orders = await OrderModel.findOne({ customer: existingUser?._id }).lean();
+    if (existingUser?.email !== email) {
+      return res.status(401).json({
+        message: '유저 권한이 없습니다',
+      });
     }
+
+    const orders = await OrderModel.findOne({ [type]: existingUser?._id }).lean();
 
     return res.status(200).json({
       orders: { ...orders },
