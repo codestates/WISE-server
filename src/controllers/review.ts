@@ -5,6 +5,7 @@ import { ObjectId } from 'mongoose';
 import ReviewModel, { Review } from '../models/review';
 import UserModel from '../models/user';
 import OrderModel from '../models/order';
+import ServiceModel from '../models/service';
 
 export const getReviews = async (req: Request, res: Response) => {
   try {
@@ -40,9 +41,16 @@ export const createReview = async (req: any, res: Response) => {
 
     const existingOrder = await OrderModel.findById(orderId);
 
-    // 주문 기록의 고객과 리뷰 작성 고객이 같다면,
-    if (String(existingOrder?.customer) !== String(existingUser?._id)) {
+    // 이미 리뷰가 적힌 주문은 다시 리뷰를 적을 수 없다.
+    if (existingOrder?.isReviewed) {
       return res.status(403).json({
+        message: '리뷰가 이미 작성되었습니다',
+      });
+    }
+
+    // 주문 기록의 고객과 리뷰 작성 고객이 같지 않다면 에러,
+    if (String(existingOrder?.customer) !== String(existingUser?._id)) {
+      return res.status(401).json({
         message: '유저 권한이 없습니다',
       });
     }
@@ -58,12 +66,22 @@ export const createReview = async (req: any, res: Response) => {
 
     console.log('result는? ', result);
 
-    const review = await ReviewModel.findById(result._id).lean();
+    // 해당 서비스에 별점 추가
+    const existingService = await ServiceModel.findById(existingOrder?.service);
+    const totalReviews = await ReviewModel.find({ service: existingOrder?.service as ObjectId })
+      .countDocuments();
 
-    console.log('review는?', review);
+    const newStarRating = totalReviews === 1 ? (existingService?.starRating + starRating)
+      : (existingService?.starRating + starRating) / totalReviews;
 
-    // 리뷰가 된 주문 업데이트
-    OrderModel.findByIdAndUpdate(orderId, { isReviewed: true });
+    await existingService?.updateOne({ starRating: newStarRating });
+
+    // isReviewed 업데이트
+    await OrderModel.findByIdAndUpdate(orderId, { isReviewed: true });
+
+    const review = await ReviewModel.findById(result._id)
+      .populate('customer', '_id name image')
+      .lean();
 
     return res.status(200).json({
       review: { ...review },
