@@ -15,7 +15,7 @@ dotenv.config();
 export const getOrder = async (req: any, res: Response) => {
   try {
     const { order } = req;
-    const existingOrder = await OrderModel.findById(order._id).lean();
+    const existingOrder = await OrderModel.findById(order._id).populate('assistant', 'name').populate('customer', 'name').lean();
 
     return res.status(200).json({
       order: { ...existingOrder },
@@ -37,7 +37,7 @@ export const getOrdersByUser = async (req: any, res: Response) => {
       });
     }
 
-    const orders = await OrderModel.findOne({ [type]: existingUser?._id }).lean();
+    const orders = await OrderModel.findOne({ [type]: existingUser?._id }).populate('assistant', 'name').populate('customer', 'name').lean();
 
     return res.status(200).json({
       orders: { ...orders },
@@ -74,7 +74,7 @@ export const createOrder = async (req: any, res: Response) => {
 
     const result = await OrderModel.create(newOrder);
 
-    const order = await OrderModel.findById(result._id).lean();
+    const order = await OrderModel.findById(result._id).populate('assistant', 'name').populate('customer', 'name').lean();
 
     return res.status(200).json({
       order: { ...order },
@@ -96,7 +96,7 @@ export const updateOrder = async (req: any, res: Response) => {
     const { order } = req;
     await OrderModel.findByIdAndUpdate(order._id, orderDetails).exec();
 
-    const updatedOrder = await OrderModel.findById(order._id).lean();
+    const updatedOrder = await OrderModel.findById(order._id).populate('assistant', 'name').populate('customer', 'name').lean();
 
     return res.status(200).json({
       order: { ...updatedOrder },

@@ -13,7 +13,7 @@ import { deleteImage } from '../utils/s3';
 export const getService = async (req: any, res: Response) => {
   try {
     const { service } = req;
-    const existingService = await ServiceModel.findById(service._id).lean();
+    const existingService = await ServiceModel.findById(service._id).populate('assistant', 'name').lean();
 
     return res.status(200).json({
       service: { ...existingService },
