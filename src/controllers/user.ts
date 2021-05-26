@@ -1,7 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable max-len */
 /* eslint-disable import/no-unresolved */
 import { Request, Response } from 'express';
 import UserModel from '../models/user';
+import ServiceModel from '../models/service';
+import OrderModel from '../models/order';
+import ReviewModel from '../models/review';
 import { deleteImage } from '../utils/s3';
 
 export const getUser = async (req: any, res: Response) => {
@@ -61,6 +65,24 @@ export const deleteUser = async (req: any, res: Response) => {
     if (existingUser?.image) {
       const prevImage = existingUser.image.split('/')[1] || '';
       deleteImage(prevImage);
+    }
+
+    if (existingUser?.isAssistant) {
+      const existingService = await ServiceModel.findOne({ assistant: user.id }).lean();
+
+      existingService?.images.forEach((element: any) => {
+        deleteImage(element.split('/')[1]);
+      });
+      existingService?.trainingCert.forEach((element: any) => {
+        deleteImage(element.split('/')[1]);
+      });
+      existingService?.orgAuth.forEach((element: any) => {
+        deleteImage(element.split('/')[1]);
+      });
+
+      ReviewModel.remove({ service: existingService?._id }).exec();
+      await OrderModel.updateMany({ service: existingService?._id }, { assistant: null, service: null });
+      ServiceModel.findByIdAndDelete(existingService?._id).exec();
     }
 
     return res.status(200).json({
