@@ -38,10 +38,9 @@ export const upload = multer({
 
 export const deleteImage = (key : string) => {
   s3.deleteObject({ Bucket: `${bucket}/wise`, Key: key },
-    (err, data) => {
+    (err) => {
       if (err) {
         console.log(err);
       }
-      console.log(data);
     });
 };

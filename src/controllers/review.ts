@@ -41,7 +41,7 @@ export const createReview = async (req: any, res: Response) => {
     const existingOrder = await OrderModel.findById(orderId);
 
     // 주문 기록의 고객과 리뷰 작성 고객이 같다면,
-    if (existingOrder?.customer !== existingUser?._id) {
+    if (String(existingOrder?.customer) !== String(existingUser?._id)) {
       return res.status(403).json({
         message: '유저 권한이 없습니다',
       });
