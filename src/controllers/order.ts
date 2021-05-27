@@ -1,6 +1,5 @@
 /* eslint-disable no-throw-literal */
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable max-len */
 /* eslint-disable import/no-unresolved */
 import { Response } from 'express';
 
@@ -15,7 +14,11 @@ dotenv.config();
 export const getOrder = async (req: any, res: Response) => {
   try {
     const { order } = req;
-    const existingOrder = await OrderModel.findById(order._id).populate('assistant', 'name').populate('customer', 'name').lean();
+    const existingOrder = await OrderModel
+      .findById(order._id)
+      .populate('assistant', 'name')
+      .populate('customer', 'name')
+      .lean();
 
     return res.status(200).json({
       order: { ...existingOrder },
@@ -37,13 +40,19 @@ export const getOrdersByUser = async (req: any, res: Response) => {
       });
     }
 
-    const orders = await OrderModel.findOne({ [type]: existingUser?._id }).populate('assistant', 'name').populate('customer', 'name').lean();
+    const orders = await OrderModel
+      .find({ [type]: existingUser?._id })
+      .populate('assistant', 'name')
+      .populate('customer', 'name')
+      .lean();
 
     return res.status(200).json({
-      orders: { ...orders },
+      orders: [...orders],
     });
   } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+    return res.status(500).json({
+      message: '서버 에러로 요청을 처리할 수 없습니다',
+    });
   }
 };
 
@@ -51,7 +60,8 @@ export const createOrder = async (req: any, res: Response) => {
   try {
     const { email } = req.authUser;
     const {
-      message, serviceId, pickup, hospital, content, date, time, hours, totalPayment,
+      message, serviceId, pickup, hospital, content,
+      date, time, hours, totalPayment,
     } = req.body;
     const customer = await UserModel.findOne({ email });
     const service = await ServiceModel.findById(serviceId);
@@ -69,18 +79,24 @@ export const createOrder = async (req: any, res: Response) => {
       hours,
       totalPayment,
       state: 'apply',
-      isReviewed: false,
     };
 
-    const result = await OrderModel.create(newOrder);
+    const result = await OrderModel
+      .create(newOrder);
 
-    const order = await OrderModel.findById(result._id).populate('assistant', 'name').populate('customer', 'name').lean();
+    const order = await OrderModel
+      .findById(result._id)
+      .populate('assistant', 'name')
+      .populate('customer', 'name')
+      .lean();
 
     return res.status(200).json({
       order: { ...order },
     });
   } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+    return res.status(500).json({
+      message: '서버 에러로 요청을 처리할 수 없습니다',
+    });
   }
 };
 
@@ -94,15 +110,23 @@ export const updateOrder = async (req: any, res: Response) => {
     }
 
     const { order } = req;
-    await OrderModel.findByIdAndUpdate(order._id, orderDetails).exec();
+    await OrderModel
+      .findByIdAndUpdate(order._id, orderDetails)
+      .exec();
 
-    const updatedOrder = await OrderModel.findById(order._id).populate('assistant', 'name').populate('customer', 'name').lean();
+    const updatedOrder = await OrderModel
+      .findById(order._id)
+      .populate('assistant', 'name')
+      .populate('customer', 'name')
+      .lean();
 
     return res.status(200).json({
       order: { ...updatedOrder },
     });
   } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+    return res.status(500).json({
+      message: '서버 에러로 요청을 처리할 수 없습니다',
+    });
   }
 };
 
@@ -111,10 +135,14 @@ export const deleteOrder = async (req: any, res: Response) => {
     const { order } = req;
     await OrderModel.findById(order._id).exec();
 
-    OrderModel.findByIdAndDelete(order._id).exec();
+    await OrderModel.findByIdAndDelete(order._id).exec();
 
-    return res.status(200).json({ message: '신청이 취소되었습니다' });
+    return res.status(200).json({
+      message: '신청이 취소되었습니다',
+    });
   } catch (error) {
-    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+    return res.status(500).json({
+      message: '서버 에러로 요청을 처리할 수 없습니다',
+    });
   }
 };
