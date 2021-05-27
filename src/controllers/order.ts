@@ -116,8 +116,8 @@ export const updateOrder = async (req: any, res: Response) => {
 
     const updatedOrder = await OrderModel
       .findById(order._id)
-      .populate('assistant', 'name')
-      .populate('customer', 'name')
+      .populate('assistant', 'name mobile')
+      .populate('customer', 'name mobile')
       .lean();
 
     return res.status(200).json({
