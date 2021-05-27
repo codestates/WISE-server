@@ -13,7 +13,7 @@ export const getReviews = async (req: Request, res: Response) => {
     const reviewsPerPage = 6;
     const totalReviews = await ReviewModel.find({ service: serviceId as any }).countDocuments();
 
-    const reviews:any = await ReviewModel.find({ service: serviceId as any })
+    const reviews = await ReviewModel.find({ service: serviceId as any })
       .sort({ createdAt: -1 })
       .skip((Number(page) - 1) * reviewsPerPage)
       .limit(reviewsPerPage)
@@ -22,10 +22,6 @@ export const getReviews = async (req: Request, res: Response) => {
 
     console.log(reviews);
     console.log(totalReviews);
-
-    if (reviews) {
-      reviews.id = reviews?._id;
-    }
 
     return res.status(200).json({
       reviews: [...reviews],
@@ -86,10 +82,6 @@ export const createReview = async (req: any, res: Response) => {
     const review = await ReviewModel.findById(result._id)
       .populate('customer', '_id name image')
       .lean();
-
-    if (review) {
-      review.id = review?._id;
-    }
 
     return res.status(200).json({
       review: { ...review },

@@ -13,10 +13,6 @@ export const getUser = async (req: any, res: Response) => {
     const { user } = req;
     const existingUser = await UserModel.findById(user.id).lean();
 
-    if (existingUser) {
-      existingUser.id = existingUser?._id;
-    }
-
     return res.status(200).json({
       user: { ...existingUser },
     });
@@ -52,9 +48,6 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     const user = await UserModel.findById(req.params.userId).lean();
-    if (user) {
-      user.id = user?._id;
-    }
 
     return res.status(200).json({
       user: { ...user },

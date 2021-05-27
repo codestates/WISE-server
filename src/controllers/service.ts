@@ -14,9 +14,6 @@ export const getService = async (req: any, res: Response) => {
   try {
     const { service } = req;
     const existingService = await ServiceModel.findById(service._id).populate('assistant', 'name').lean();
-    if (existingService) {
-      existingService.id = existingService?._id;
-    }
 
     return res.status(200).json({
       service: { ...existingService },
@@ -48,7 +45,7 @@ export const getServices = async (req: any, res: Response) => {
     });
     const day = `${moment(date).format('dddd')} ${time}`;
 
-    const services:any = await ServiceModel.find({
+    const services = await ServiceModel.find({
       assistant: { $nin: bookedOrders }, location, availableDays: day,
     })
       .sort({ _id: 1, starRating: -1 })
@@ -62,13 +59,6 @@ export const getServices = async (req: any, res: Response) => {
       assistant: { $nin: bookedOrders }, location, availableDays: day,
     }).countDocuments();
 
-    if (services) {
-      services.id = services?._id;
-    }
-    if (services.assistant) {
-      services.assistant.id = services.assistant?._id;
-    }
-
     return res.status(200).json({
       services: [...services],
       totalServices,
@@ -80,16 +70,12 @@ export const getServices = async (req: any, res: Response) => {
 
 export const getPopularServices = async (req: any, res: Response) => {
   try {
-    const popularServices:any = await ServiceModel.find({})
+    const popularServices = await ServiceModel.find({})
       .sort({ _id: 1, starRating: -1 })
       .limit(8)
       .select('assistant images wage greetings location starRating')
       .populate('assistant', 'name')
       .lean();
-
-    if (popularServices) {
-      popularServices.id = popularServices?._id;
-    }
 
     return res.status(200).json({
       popularServices: [...popularServices],
@@ -104,7 +90,7 @@ export const getAllServices = async (req: any, res: Response) => {
     const { page } = req.query;
     const searchPerPage = 16;
 
-    const services:any = await ServiceModel.find({})
+    const services = await ServiceModel.find({})
       .sort({ _id: 1, starRating: -1 })
       .skip(8 + (Number(page) - 1) * searchPerPage)
       .limit(searchPerPage)
@@ -113,12 +99,6 @@ export const getAllServices = async (req: any, res: Response) => {
       .lean();
 
     const totalServices = await ServiceModel.find({}).countDocuments();
-    if (services) {
-      services.id = services?._id;
-    }
-    if (services.assistant) {
-      services.assistant.id = services.assistant?._id;
-    }
 
     return res.status(200).json({
       services: [...services],
@@ -181,9 +161,6 @@ export const createService = async (req: any, res: Response) => {
 
     await UserModel.findByIdAndUpdate(existingUser?._id, { isAssistant: true }).exec();
 
-    if (existingService) {
-      existingService.id = existingService?._id;
-    }
     return res.status(200).json({
       service: { ...existingService },
     });
@@ -275,9 +252,6 @@ export const updateService = async (req: any, res: Response) => {
     });
 
     const updatedService = await ServiceModel.findById(service._id).lean();
-    if (updatedService) {
-      updatedService.id = updatedService?._id;
-    }
 
     return res.status(200).json({
       service: { ...updatedService },
