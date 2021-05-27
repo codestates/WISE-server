@@ -17,10 +17,6 @@ export const getOrder = async (req: any, res: Response) => {
     const { order } = req;
     const existingOrder = await OrderModel.findById(order._id).populate('assistant', 'name').populate('customer', 'name').lean();
 
-    if (existingOrder) {
-      existingOrder.id = existingOrder?._id;
-    }
-
     return res.status(200).json({
       order: { ...existingOrder },
     });
@@ -42,10 +38,6 @@ export const getOrdersByUser = async (req: any, res: Response) => {
     }
 
     const orders = await OrderModel.findOne({ [type]: existingUser?._id }).populate('assistant', 'name').populate('customer', 'name').lean();
-
-    if (orders) {
-      orders.id = orders?._id;
-    }
 
     return res.status(200).json({
       orders: { ...orders },
@@ -84,10 +76,6 @@ export const createOrder = async (req: any, res: Response) => {
 
     const order = await OrderModel.findById(result._id).populate('assistant', 'name').populate('customer', 'name').lean();
 
-    if (order) {
-      order.id = order?._id;
-    }
-
     return res.status(200).json({
       order: { ...order },
     });
@@ -109,10 +97,6 @@ export const updateOrder = async (req: any, res: Response) => {
     await OrderModel.findByIdAndUpdate(order._id, orderDetails).exec();
 
     const updatedOrder = await OrderModel.findById(order._id).populate('assistant', 'name').populate('customer', 'name').lean();
-
-    if (updatedOrder) {
-      updatedOrder.id = updatedOrder?._id;
-    }
 
     return res.status(200).json({
       order: { ...updatedOrder },
