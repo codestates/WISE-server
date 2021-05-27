@@ -14,7 +14,7 @@ export interface Order {
   hours: number,
   totalPayment: number,
   state: string,
-  isReviewed: boolean,
+  isReviewed?: boolean,
 }
 
 const OrderSchema = new Schema<Order>({
