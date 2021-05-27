@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
 // eslint-disable-next-line import/no-unresolved
 import UserModel, { User } from '../models/user';
@@ -48,6 +49,9 @@ export const signup = async (req: Request, res: Response) => {
     await UserModel.create(newUser);
 
     const user = await UserModel.findOne({ email }).lean();
+    if (user) {
+      user.id = user?._id;
+    }
 
     return res.status(201).json({
       user: { ...user },
@@ -80,6 +84,9 @@ export const signin = async (req: any, res: Response) => {
       await UserModel.create(newUser);
 
       const user = await UserModel.findOne({ email }).lean();
+      if (user) {
+        user.id = user?._id;
+      }
 
       return res.status(200).json({
         user: { ...user },
@@ -93,6 +100,10 @@ export const signin = async (req: any, res: Response) => {
       return res.status(400).json({
         message: '로그인 방식이 올바르지 않습니다',
       });
+    }
+
+    if (existingUser) {
+      existingUser.id = existingUser?._id;
     }
 
     // 새로 가입하는 경우도 아니고, signinMethod도 일치한다면, 바로 로그인 성공
