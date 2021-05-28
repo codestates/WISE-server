@@ -23,7 +23,7 @@ export const getService = async (req: any, res: Response) => {
   }
 };
 
-export const getServices = async (req: any, res: Response) => {
+export const getServicesBySearch = async (req: any, res: Response) => {
   try {
     const {
       location, date, time, page,
@@ -79,6 +79,26 @@ export const getPopularServices = async (req: any, res: Response) => {
 
     return res.status(200).json({
       popularServices: [...popularServices],
+    });
+  } catch (error) {
+    return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
+  }
+};
+
+export const getScheduleByServices = async (req: any, res: Response) => {
+  try {
+    const { serviceId } = req.query;
+    const existingServices:any = await ServiceModel.findById(serviceId).select('availableDays').lean();
+
+    const existingOrders = await OrderModel.find({ service: serviceId }).select('date time');
+    const orders:string[] = [];
+    existingOrders.forEach((element: any) => {
+      orders.push(`${moment(element.date).format('YYYY-MM-DD')} ${element.time}`);
+    });
+
+    return res.status(200).json({
+      availableDays: existingServices.availableDays,
+      orders,
     });
   } catch (error) {
     return res.status(500).json({ message: '서버 에러로 요청을 처리할 수 없습니다' });
