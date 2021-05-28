@@ -4,7 +4,7 @@ import { Router } from 'express';
 import auth from '../middlewares/auth';
 import { serviceById, isServiceUser } from '../middlewares/service';
 import {
-  getService, createService, updateService, deleteService, getAllServices, getServices, getPopularServices,
+  getService, createService, updateService, deleteService, getAllServices, getServicesBySearch, getPopularServices, getScheduleByServices,
 } from '../controllers/service';
 import { upload } from '../utils/s3';
 
@@ -12,8 +12,9 @@ const router = Router();
 
 router.get('/services/all', getAllServices);
 router.get('/services/popularity', getPopularServices);
+router.get('/services/schedule', getScheduleByServices);
 router.get('/services/:serviceId', getService);
-router.get('/services', getServices);
+router.get('/services', getServicesBySearch);
 router.post('/services', auth, upload.fields([
   { name: 'images', maxCount: 3 },
   { name: 'trainingCert', maxCount: 3 },
