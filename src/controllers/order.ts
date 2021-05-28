@@ -44,6 +44,7 @@ export const getOrdersByUser = async (req: any, res: Response) => {
       .find({ [type]: existingUser?._id })
       .populate('assistant', 'name')
       .populate('customer', 'name')
+      .populate('service', 'location images')
       .lean();
 
     return res.status(200).json({
