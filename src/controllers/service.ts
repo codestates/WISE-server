@@ -177,7 +177,9 @@ export const createService = async (req: any, res: Response) => {
 
     await ServiceModel.create(newService);
 
-    const existingService = await ServiceModel.findOne({ assistant: existingUser?._id }).lean();
+    const existingService = await ServiceModel.findOne({ assistant: existingUser?._id })
+      .populate('assistant', 'name')
+      .lean();
 
     await UserModel.findByIdAndUpdate(existingUser?._id, { isAssistant: true }).exec();
 
@@ -271,7 +273,9 @@ export const updateService = async (req: any, res: Response) => {
       deleteImage(element.split('/')[1]);
     });
 
-    const updatedService = await ServiceModel.findById(service._id).lean();
+    const updatedService = await ServiceModel.findById(service._id)
+      .populate('assistant', 'name')
+      .lean();
 
     return res.status(200).json({
       service: { ...updatedService },
