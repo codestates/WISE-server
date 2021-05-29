@@ -13,22 +13,20 @@ export const getUser = async (req: any, res: Response) => {
     const { user } = req;
     const existingUser:any = await UserModel.findById(user.id).lean();
 
-    delete existingUser.isAssistant;
-    delete existingUser.signinMethod;
-
     if (existingUser) {
-      const existingService = await ServiceModel.findOne({ assistant: user.id }).lean();
+      const existingService = await ServiceModel.findOne({ assistant: user.id });
       if (existingService) {
-        return res.status(200).json({
-          user: { ...existingUser },
-          service: { ...existingService },
-        });
+        existingUser.service = existingService._id;
+      } else {
+        existingUser.service = '';
       }
     }
 
+    delete existingUser.isAssistant;
+    delete existingUser.signinMethod;
+
     return res.status(200).json({
       user: { ...existingUser },
-      service: {},
     });
   } catch (error) {
     return res.status(500).json({
