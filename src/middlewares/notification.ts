@@ -26,10 +26,10 @@ export const notificationById = async (req: any, res: Response, next: NextFuncti
 
 export const isNotificationUser = async (req: any, res: Response, next: NextFunction) => {
   try {
-    const { sender } = req.notification;
+    const { recipient } = req.notification;
     const { email } = req.authUser;
 
-    const user = await UserModel.findById(sender);
+    const user = await UserModel.findById(recipient);
 
     const isSame = user?.email === email;
 
