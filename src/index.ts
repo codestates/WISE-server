@@ -11,6 +11,7 @@ import serviceRoutes from './routes/service';
 import reviewRoutes from './routes/review';
 import orderRoutes from './routes/order';
 import paymentRoutes from './routes/payment';
+import notificationRoutes from './routes/notification';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/v1', serviceRoutes);
 app.use('/api/v1', reviewRoutes);
 app.use('/api/v1', orderRoutes);
 app.use('/api/v1', paymentRoutes);
+app.use('/api/v1', notificationRoutes);
 
 const PORT = process.env.PORT || 5000;
 
