@@ -11,7 +11,7 @@ import { deleteImage } from '../utils/s3';
 export const getUser = async (req: any, res: Response) => {
   try {
     const { user } = req;
-    const existingUser:any = await UserModel.findById(user.id).lean();
+    const existingUser:any = await UserModel.findById(user.id).select('-isAssistant -signinMethod').lean();
 
     if (existingUser) {
       const existingService = await ServiceModel.findOne({ assistant: user.id });
@@ -21,9 +21,6 @@ export const getUser = async (req: any, res: Response) => {
         existingUser.service = '';
       }
     }
-
-    delete existingUser.isAssistant;
-    delete existingUser.signinMethod;
 
     return res.status(200).json({
       user: { ...existingUser },
@@ -59,7 +56,15 @@ export const updateUser = async (req: Request, res: Response) => {
       deleteImage(prevImage);
     }
 
-    const user = await UserModel.findById(req.params.userId).lean();
+    const user: any = await UserModel.findById(req.params.userId).select('-isAssistant -signinMethod').lean();
+    if (user) {
+      const existingService = await ServiceModel.findOne({ assistant: user.id });
+      if (existingService) {
+        user.service = existingService._id;
+      } else {
+        user.service = '';
+      }
+    }
 
     return res.status(200).json({
       user: { ...user },
