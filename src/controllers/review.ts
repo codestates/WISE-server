@@ -10,7 +10,7 @@ import ServiceModel from '../models/service';
 export const getReviews = async (req: Request, res: Response) => {
   try {
     const { serviceId, page } = req.query;
-    const reviewsPerPage = 6;
+    const reviewsPerPage = 4;
     const totalReviews = await ReviewModel.find({ service: serviceId as any }).countDocuments();
 
     const reviews = await ReviewModel.find({ service: serviceId as any })
