@@ -42,9 +42,10 @@ export const getOrdersByUser = async (req: any, res: Response) => {
 
     const orders = await OrderModel
       .find({ [type]: existingUser?._id })
-      .populate('assistant', 'name')
-      .populate('customer', 'name')
-      .populate('service', 'location images')
+      .populate('customer', '_id name mobile')
+      .populate('assistant', '_id name mobile')
+      .populate('service', '_id location images')
+      .select('content date time totalPayment state isReviewed')
       .lean();
 
     return res.status(200).json({
