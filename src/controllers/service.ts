@@ -48,7 +48,7 @@ export const getServicesBySearch = async (req: any, res: Response) => {
     const services = await ServiceModel.find({
       assistant: { $nin: bookedOrders }, location, availableDays: day,
     })
-      .sort({ _id: 1, starRating: -1 })
+      .sort({ starRating: -1, _id: 1 })
       .skip((Number(page) - 1) * searchPerPage)
       .limit(searchPerPage)
       .select('assistant images wage greetings location starRating')
@@ -71,7 +71,7 @@ export const getServicesBySearch = async (req: any, res: Response) => {
 export const getPopularServices = async (req: any, res: Response) => {
   try {
     const popularServices = await ServiceModel.find({})
-      .sort({ _id: 1, starRating: -1 })
+      .sort({ starRating: -1, _id: 1 })
       .limit(8)
       .select('assistant images wage greetings location starRating')
       .populate('assistant', 'name')
@@ -111,7 +111,7 @@ export const getAllServices = async (req: any, res: Response) => {
     const searchPerPage = 16;
 
     const services = await ServiceModel.find({})
-      .sort({ _id: 1, starRating: -1 })
+      .sort({ starRating: -1, _id: 1 })
       .skip(8 + (Number(page) - 1) * searchPerPage)
       .limit(searchPerPage)
       .select('assistant images wage greetings location starRating')
