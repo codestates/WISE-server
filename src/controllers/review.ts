@@ -71,8 +71,17 @@ export const createReview = async (req: any, res: Response) => {
     const totalReviews = await ReviewModel.find({ service: existingOrder?.service as ObjectId })
       .countDocuments();
 
-    const newStarRating = totalReviews === 1 ? (existingService?.starRating + starRating)
-      : (existingService?.starRating + starRating) / totalReviews;
+    console.log('서비스 정보', existingService);
+    console.log('리뷰 총 개수', totalReviews);
+
+    const newStarRating = totalReviews === 1
+      ? Number(starRating)
+      : Number(((existingService?.starRating as number * (totalReviews - 1)
+      + Number(starRating)) / totalReviews).toFixed(1));
+
+    ServiceModel.findByIdAndUpdate(existingService?._id, { starRating: newStarRating }).exec();
+
+    console.log('새로운 별점', newStarRating);
 
     await existingService?.updateOne({ starRating: newStarRating });
 
