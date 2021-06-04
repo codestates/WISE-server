@@ -1,6 +1,7 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
-// eslint-disable-next-line import/no-unresolved
+import ServiceModel from '../models/service';
 import UserModel, { User } from '../models/user';
 
 export const validateEmail = async (req: Request, res: Response) => {
@@ -48,10 +49,8 @@ export const signup = async (req: Request, res: Response) => {
 
     await UserModel.create(newUser);
 
-    const user = await UserModel.findOne({ email }).lean();
-    if (user) {
-      user.id = user?._id;
-    }
+    const user:any = await UserModel.findOne({ email }).select('-isAssistant -signinMethod').lean();
+    user.service = '';
 
     return res.status(201).json({
       user: { ...user },
@@ -68,7 +67,7 @@ export const signin = async (req: any, res: Response) => {
     const { authUser } = req;
     const { signinMethod } = req.body;
 
-    const existingUser = await UserModel.findOne({ email: authUser.email }).lean();
+    const existingUser:any = await UserModel.findOne({ email: authUser.email }).lean();
 
     // 기존에 가입되어 있지 않은 회원이라면,
     // 새롭게 회원 가입한다.
@@ -83,9 +82,13 @@ export const signin = async (req: any, res: Response) => {
 
       await UserModel.create(newUser);
 
-      const user = await UserModel.findOne({ email }).lean();
-      if (user) {
-        user.id = user?._id;
+      const user: any = await UserModel.findOne({ email }).select('-isAssistant -signinMethod').lean();
+
+      const existingService = await ServiceModel.findOne({ assistant: user._id });
+      if (existingService) {
+        user.service = existingService._id;
+      } else {
+        user.service = '';
       }
 
       return res.status(200).json({
@@ -102,8 +105,14 @@ export const signin = async (req: any, res: Response) => {
       });
     }
 
-    if (existingUser) {
-      existingUser.id = existingUser?._id;
+    delete existingUser?.isAssistant;
+    delete existingUser?.signinMethod;
+
+    const existingService = await ServiceModel.findOne({ assistant: existingUser._id });
+    if (existingService) {
+      existingUser.service = existingService._id;
+    } else {
+      existingUser.service = '';
     }
 
     // 새로 가입하는 경우도 아니고, signinMethod도 일치한다면, 바로 로그인 성공
