@@ -16,7 +16,7 @@ export const getOrder = async (req: any, res: Response) => {
     const { order } = req;
     const existingOrder = await OrderModel
       .findById(order._id)
-      .populate('assistant', 'name')
+      .populate('assistant', '_id name mobile')
       .populate('customer', 'name')
       .lean();
 
