@@ -23,7 +23,7 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { order } = req;
         const existingOrder = yield order_1.default
             .findById(order._id)
-            .populate('assistant', 'name')
+            .populate('assistant', '_id name mobile')
             .populate('customer', 'name')
             .lean();
         return res.status(200).json({
