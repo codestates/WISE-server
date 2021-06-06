@@ -20,9 +20,6 @@ export const getReviews = async (req: Request, res: Response) => {
       .populate('customer', '_id name image')
       .lean();
 
-    console.log(reviews);
-    console.log(totalReviews);
-
     return res.status(200).json({
       reviews: [...reviews],
       totalReviews,
@@ -64,15 +61,10 @@ export const createReview = async (req: any, res: Response) => {
 
     const result = await ReviewModel.create(newReview);
 
-    console.log('result는? ', result);
-
     // 해당 서비스에 별점 추가
     const existingService = await ServiceModel.findById(existingOrder?.service);
     const totalReviews = await ReviewModel.find({ service: existingOrder?.service as ObjectId })
       .countDocuments();
-
-    console.log('서비스 정보', existingService);
-    console.log('리뷰 총 개수', totalReviews);
 
     const newStarRating = totalReviews === 1
       ? Number(starRating)
@@ -80,8 +72,6 @@ export const createReview = async (req: any, res: Response) => {
       + Number(starRating)) / totalReviews).toFixed(1));
 
     ServiceModel.findByIdAndUpdate(existingService?._id, { starRating: newStarRating }).exec();
-
-    console.log('새로운 별점', newStarRating);
 
     await existingService?.updateOne({ starRating: newStarRating });
 

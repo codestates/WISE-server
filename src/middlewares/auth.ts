@@ -6,7 +6,6 @@ import admin from '../firebase';
 const auth = async (req: any, res: Response, next: NextFunction) => {
   try {
     const accessToken = req.header('accessToken');
-    console.log(accessToken);
     if (!accessToken) {
       return res.status(400).json({ message: '로그인을 해주세요' });
     }
